@@ -9,8 +9,8 @@
         - [(1.1.4) Pod disruptor](#114-pod-disruptor)
         - [(1.1.5) Service disruptor](#115-service-disruptor)
       - [(1.1.6) Chaos testing example :smiling\_imp:](#116-chaos-testing-example-smiling_imp)
-  - [(1.2) Prerequisites](#12-prerequisites)
-  - [(1.3) Setting up a Kubernetes cluster :nerd\_face:](#13-setting-up-a-kubernetes-cluster-nerd_face)
+    - [(1.2) Prerequisites](#12-prerequisites)
+    - [(1.3) Setting up a Kubernetes cluster :nerd\_face:](#13-setting-up-a-kubernetes-cluster-nerd_face)
   - [(2) Deployments](#2-deployments)
     - [(2.1) Deploy provider API service](#21-deploy-provider-api-service)
     - [(2.2) Deploy consumer API service](#22-deploy-consumer-api-service)
@@ -74,7 +74,7 @@ You will build these services using the following three steps:
 - Build the Docker image for each service using Dockerfile
 - Deploy each service to the Kubernetes cluster
 
-## (1.2) Prerequisites
+### (1.2) Prerequisites
 
 To follow along with the steps in the article, you need to fulfill the following prerequisites:
 
@@ -83,7 +83,7 @@ To follow along with the steps in the article, you need to fulfill the following
 * The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) command line tool to interact with the Kubernetes cluster.
 * Have an account on Docker hub to store the service images.
 
-## (1.3) Setting up a Kubernetes cluster :nerd_face:
+### (1.3) Setting up a Kubernetes cluster :nerd_face:
 You can set up a Kubernetes cluster by using cloud provider-supported tools like [Vultr Kubernetes](https://www.vultr.com/kubernetes/), [AWS Elastic Kubernetes Engine](https://aws.amazon.com/eks/), or [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine). Or you can create your own Kubernetes cluster setup using tools like [Minikub](https://minikube.sigs.k8s.io/docs/) or [kind](https://kind.sigs.k8s.io/). To make things simpler, let’s use Minikube to set up the Kubernetes cluster.
 
 Open a new terminal in your local machine and run the following commands to install Minikube:
