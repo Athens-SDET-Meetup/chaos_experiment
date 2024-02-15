@@ -528,7 +528,7 @@ spec:
         env:
         # Define the environment variable
         - name: PROVIDER_URL 
-          value: my-go-app-service
+          value: consumer-chaos-service
         - name: PROVIDER_PORT
           value: "3001"
 ```
@@ -593,7 +593,7 @@ You should be able to see the similar output to that shown below:
 NAME                      TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)          AGE
 kubernetes                ClusterIP      10.96.0.1       <none>          443/TCP          155m
 my-consumer-app-service   LoadBalancer   10.110.54.31    10.110.54.31    3001:31258/TCP   23m
-my-go-app-service         LoadBalancer   10.105.156.41   10.105.156.41   3001:30057/TCP   26m
+consumer-chaos-service         LoadBalancer   10.105.156.41   10.105.156.41   3001:30057/TCP   26m
 ```
 
 You can make an API request to the API “/consuming” using the command shown below (You need to replace the “your_external_ip” with your actual value for the “EXTERNAL-IP” of your “my-consumer-app-service”):
