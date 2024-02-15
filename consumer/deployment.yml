@@ -25,6 +25,6 @@ spec:
         env:
         # Define the environment variable
         - name: PROVIDER_URL 
-          value: consumer-chaos-service
+          value: provider-chaos-service
         - name: PROVIDER_PORT
           value: "3001"
