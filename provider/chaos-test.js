@@ -57,6 +57,6 @@ export const options = {
       errorCode: 500,
       errorBody: errorBody,
     };
-    const svcDisruptor = new ServiceDisruptor('my-go-app-service', 'default');
+    const svcDisruptor = new ServiceDisruptor('provider-chaos-service', 'default');
     svcDisruptor.injectHTTPFaults(fault, 30);
   }

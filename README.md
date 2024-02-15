@@ -11,9 +11,15 @@
       - [(1.1.6) Chaos testing example :smiling\_imp:](#116-chaos-testing-example-smiling_imp)
     - [(1.2) Prerequisites](#12-prerequisites)
     - [(1.3) Setting up a Kubernetes cluster :nerd\_face:](#13-setting-up-a-kubernetes-cluster-nerd_face)
-  - [(2) Deployments](#2-deployments)
+  - [(2) Deployments :rocket:](#2-deployments-rocket)
     - [(2.1) Deploy provider API service](#21-deploy-provider-api-service)
+      - [(2.1.1) Going through the files inside the service directory](#211-going-through-the-files-inside-the-service-directory)
+      - [(2.1.2) Building the service image and push it to Docker Hub](#212-building-the-service-image-and-push-it-to-docker-hub)
+      - [(2.1.3) Deploying the service to the Kubernetes cluster](#213-deploying-the-service-to-the-kubernetes-cluster)
     - [(2.2) Deploy consumer API service](#22-deploy-consumer-api-service)
+      - [(2.2.1) Going through the files inside the service directory](#221-going-through-the-files-inside-the-service-directory)
+      - [(2.2.2) Building the service image and push it to Docker Hub](#222-building-the-service-image-and-push-it-to-docker-hub)
+      - [(2.2.3) Deploying the service to the Kubernetes cluster](#223-deploying-the-service-to-the-kubernetes-cluster)
   - [(3) Chaos Testing](#3-chaos-testing)
     - [(3.1) Installing k6 and xk6-disruptor](#31-installing-k6-and-xk6-disruptor)
     - [(3.2) Implementing chaos testing scenarios](#32-implementing-chaos-testing-scenarios)
@@ -117,13 +123,155 @@ NAME       STATUS   ROLES           AGE    VERSION
 minikube   Ready    control-plane   145m   v1.26.3
 ```
 
-Now you are all set and ready to deploy your services!:hugs:
+Now you are all set and ready to deploy your services! :hugs:
 
-## (2) Deployments
+## (2) Deployments :rocket:
 
 ### (2.1) Deploy provider API service
 
+#### (2.1.1) Going through the files inside the service directory
+
+The current structure of the directory looks like the listing below:
+```
+.
+├── chaos-test.js
+├── deployment.yml
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── provider.go
+└── service.yml
+```
+1. The **chaos-test.js** file is for defining the chaos testing scenario for your test. Let’s skip this file for now. You will learn about this file in detail in the “Implementing chaos testing scenarios” sub-section.
+
+2. The **go.mod** and **go.sum** files define the service dependencies to be run.
+
+3. The **provider.go** file implements all the logic of the service. You create an API that shows the current timestamp in the response body.
+
+```
+package main
+
+import (
+  "fmt"
+  "Time"
+
+  "github.com/gin-gonic/gin"
+)
+
+func main() {
+  r := gin.New()
+
+  r.GET("/", func(c *gin.Context) {
+    c.String(200, "Current time is: "+fmt.Sprint(time.Now().Unix()))
+  })
+
+  r.Run(":3000")
+}
+```
+The service will use the [Gin](https://gin-gonic.com/) framework to implement the web service and will run on port 3000.
+
+4. The Dockerfile defines all the steps to build the service image so that you will deploy the service to Kubernetes later on using this image.
+   
+```
+FROM golang:1.19-alpine
+
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY *.go ./
+
+RUN go build -o /main
+
+CMD [ "/main" ]
+```
+
+To build the Docker image, Docker will perform the following steps :
+
+- Use the “golang:1.19-alpine” image as a Go run time
+- Set the working directory to “/app” path
+- Copy go.mod, go.sum file to the work directory
+- Install the dependencies using go mod download
+- Copy all the go files in the root directory to the “/app” path
+- Run the go build -o /main to package the service into an execution file named “main”
+- Set command to run the service inside the Docker container using “main” execution file
+
+5. The **deployment.yml** file defines the deployment configuration to create the Kubernetes pods for the service.
+   
+```
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provider-chaos
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      name: provider-chaos
+  template:
+    metadata:
+      labels:
+        name: provider-chaos
+    spec:
+      containers:
+      - name: application
+        image: your_docker_hub_account/provider-chaos:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: dockerhub-secret
+        ports:
+          - containerPort: 3000
+```
+
+The Kubernetes cluster will execute the deployment to:
+
+- Create five pods since the number of replicas is “5”.
+- Name the pods with the prefix “provider-chaos” since the selector.matchLabels.name value is “provider-chaos”.
+- Create the pods using the container image. Modify this line so it uses your Docker Hub account name.
+- To access the Docker Hub image, Kubernetes will use the secret variable named dockerhub-secret. As a security best practice, you should not show your Docker Hub credentials in a deployment file. Instead, you need to create a secret variable and then access it via the Kubernetes deployment file. You will create this secret variable later in this section.
+- Kubernetes expose the running service container via port “3000”.
+You need to replace “your_docker_hub_account” with your actual value at the line “image: your_docker_hub_account/provider-chaos:latest” in the deployment.yml file.
+
+6. The **service.yml** file defines a Kubernetes service as a load balancer so that you can access the demo service from outside the Kubernetes cluster.
+
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: provider-chaos-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: HTTP
+    port: 3001
+    targetPort: 3000
+  selector:
+    name: provider-chaos
+```
+The Kubernetes cluster will :
+
+- Create a new service with the name as “provider-chaos-service” and type “LoadBalancer”
+- Select all the running pods with the prefix “provider-chaos”
+- Access these pods via port “3000”
+- Then expose these pods via port “3001”
+
+#### (2.1.2) Building the service image and push it to Docker Hub
+
+#### (2.1.3) Deploying the service to the Kubernetes cluster
+
+
 ### (2.2) Deploy consumer API service
+
+#### (2.2.1) Going through the files inside the service directory
+
+#### (2.2.2) Building the service image and push it to Docker Hub
+
+#### (2.2.3) Deploying the service to the Kubernetes cluster
 
 ## (3) Chaos Testing
 

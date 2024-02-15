@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: application
-        image: gpap84/provider-chaos:latest
+        image: your_docker_hub_account/provider-chaos:latest
         imagePullPolicy: Always
         envFrom:
         - secretRef:
