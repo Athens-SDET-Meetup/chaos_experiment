@@ -1,5 +1,27 @@
 # Improve Application Resiliency With Chaos Testing
 
+- [Improve Application Resiliency With Chaos Testing](#improve-application-resiliency-with-chaos-testing)
+  - [(1) Tutorial Intro](#1-tutorial-intro)
+    - [(1.1) Introduction](#11-introduction)
+      - [(1.1.1) What is chaos testing?](#111-what-is-chaos-testing)
+      - [(1.1.2) Why implement chaos testing?](#112-why-implement-chaos-testing)
+      - [(1.1.3) Chaos xk6-disruptor](#113-chaos-xk6-disruptor)
+        - [(1.1.4) Pod disruptor](#114-pod-disruptor)
+        - [(1.1.5) Service disruptor](#115-service-disruptor)
+      - [(1.1.6) Chaos testing example :smiling\_imp:](#116-chaos-testing-example-smiling_imp)
+  - [(1.2) Prerequisites](#12-prerequisites)
+  - [(1.3) Setting up a Kubernetes cluster :nerd\_face:](#13-setting-up-a-kubernetes-cluster-nerd_face)
+  - [(2) Deployments](#2-deployments)
+    - [(2.1) Deploy provider API service](#21-deploy-provider-api-service)
+    - [(2.2) Deploy consumer API service](#22-deploy-consumer-api-service)
+  - [(3) Chaos Testing](#3-chaos-testing)
+    - [(3.1) Installing k6 and xk6-disruptor](#31-installing-k6-and-xk6-disruptor)
+    - [(3.2) Implementing chaos testing scenarios](#32-implementing-chaos-testing-scenarios)
+    - [(3.3) Root cause analysis](#33-root-cause-analysis)
+    - [(3.4) Solution](#34-solution)
+  - [(4) Conclusion](#4-conclusion)
+
+
 ## (1) Tutorial Intro
 
 ### (1.1) Introduction
