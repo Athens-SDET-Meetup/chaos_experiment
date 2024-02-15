@@ -14,9 +14,9 @@
   - [(2) Deployments :rocket:](#2-deployments-rocket)
     - [(2.1) Deploy provider API service](#21-deploy-provider-api-service)
       - [(2.1.1) Going through the files inside the service directory](#211-going-through-the-files-inside-the-service-directory)
-      - [(2.1.2) Building the service image and push it to Docker Hub](#212-building-the-service-image-and-push-it-to-docker-hub)
-      - [(2.1.3) Deploying the service to the Kubernetes cluster](#213-deploying-the-service-to-the-kubernetes-cluster)
-    - [(2.2) Deploy consumer API service](#22-deploy-consumer-api-service)
+      - [(2.1.2) Building the service image and push it to Docker Hub :building\_construction:](#212-building-the-service-image-and-push-it-to-docker-hub-building_construction)
+      - [(2.1.3) Deploying the service to the Kubernetes cluster :rocket:](#213-deploying-the-service-to-the-kubernetes-cluster-rocket)
+    - [(2.2) Deploy consumer API service :rocket:](#22-deploy-consumer-api-service-rocket)
       - [(2.2.1) Going through the files inside the service directory](#221-going-through-the-files-inside-the-service-directory)
       - [(2.2.2) Building the service image and push it to Docker Hub](#222-building-the-service-image-and-push-it-to-docker-hub)
       - [(2.2.3) Deploying the service to the Kubernetes cluster](#223-deploying-the-service-to-the-kubernetes-cluster)
@@ -260,18 +260,353 @@ The Kubernetes cluster will :
 - Access these pods via port “3000”
 - Then expose these pods via port “3001”
 
-#### (2.1.2) Building the service image and push it to Docker Hub
+#### (2.1.2) Building the service image and push it to Docker Hub :building_construction:
 
-#### (2.1.3) Deploying the service to the Kubernetes cluster
+In order to deploy the service to the Kubernetes cluster, you need to create the Docker image first. From the current terminal, run the following command to create a new Docker image and replace “your_docker_hub_account” with your actual Docker Hub account value.
+
+```
+docker build -t your_docker_hub_account/provider-chaos .
+```
+
+You should see a similar output as that shown below:
+```
+...
+ => [3/7] COPY go.mod ./    0.1s
+ => [4/7] COPY go.sum ./     0.1s
+ => [5/7] RUN go mod download   6.7s
+ => [6/7] COPY *.go ./                                              0.1s
+ => [7/7] RUN go build -o /main                                            16.2s
+ => exporting to image                                          3.1s
+ => => exporting layers            3.1s
+ => => writing image sha256:b714907f712bf2889cde0840e83fdb4b20d4e167aee3462880d28517afb47c1f      0.0s
+ => => naming to docker.io/your_docker_hub_account/provider-chaos
+```
+
+Log in to Docker Hub from the current terminal by running:
+
+```
+docker login
+```
+
+The docker command line will ask for your Docker Hub account name and password. After providing your values, you should see the following output showing that you have logged in to Docker Hub successfully.
+
+```
+Authenticating with existing credentials...
+WARNING! Your password will be stored unencrypted in /home/donald/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+```
+
+Finally, run the following command to publish the service image to your Docker Hub page and replace “your_docker_hub_account” with your actual value.
+
+```
+docker push your_docker_hub_account/provider-chaos
+```
 
 
-### (2.2) Deploy consumer API service
+You should see the following output:
+
+```
+Using default tag: latest
+The push refers to repository [docker.io/your_docker_hub_account/provider-chaos]
+363f5106a57e: Pushed 
+2722c1fdbed8: Pushed 
+6c35a8e7f30c: Pushed 
+20cb7f1cf854: Pushed 
+368e5a7a0116: Pushed 
+73b40ab56d66: Layer already exists 
+d0bf2a758a06: Layer already exists 
+10691ab46c83: Layer already exists 
+d270ab11cf6e: Layer already exists 
+7cd52847ad77: Layer already exists 
+latest: digest: sha256:f5b5fd30150b88ab0b6fec772bcde7d69c7df371181af5c80cd395bae79cfab3 size: 2410
+```
+
+Now that you have successfully pushed the service image to Docker Hub. Let’s move on to deploy the service to the Kubernetes cluster. :rocket:
+
+#### (2.1.3) Deploying the service to the Kubernetes cluster :rocket:
+
+You need to create a Kubernetes secret named dockerhub-secret to allow Kubernetes to get access to the Docker Hub images. Run the following command to do it, replace “your_docker_hub_user”, “your_docker_hub_password”, and “your_docker_hub_email” with your actual values.
+
+
+```
+kubectl create secret docker-registry dockerhub-secret \
+  --docker-server=docker.io \
+  --docker-username=your_docker_hub_user \
+  --docker-password=your_docker_hub_password \
+  --docker-email=your_docker_hub_email
+```
+
+You should see the following output from the console showing that you have successfully created the “dockerhub-secret” secret.
+
+```
+secret/dockerhub-secret created
+```
+Then, you deploy the Kubernetes pods for the application service using deployment.yml file by running the following command:
+
+```
+kubectl apply -f deployment.yml
+```
+
+You should see the following output:
+
+
+```
+deployment.apps/provider-chaos created
+```
+
+By default, Minikube does not come with LoadBalancer support activated. You need to run the following command to set up the load balancer in your local machine. This will allow you to access the API service from outside the Kubernetes cluster using a Kubernetes service component. Open up a new terminal and run the following command:
+
+```
+minikube tunnel
+```
+
+You should see the following output which shows that you have successfully started the minikube tunnel process:
+
+```
+Status:
+        machine: minikube
+        pid: 79041
+        route: 10.96.0.0/12 -> 192.168.49.2
+        minikube: Running
+        services: []
+    errors:
+                minikube: no errors
+                router: no errors
+                loadbalancer emulator: no errors
+
+```
+
+Keep this terminal open so that the tunnel process does not stop.
+
+Finally, you deploy the Kubernetes service so that you can access the application service from outside the Kubernetes cluster.
+
+```
+kubectl apply -f service.yml
+```
+
+You should see the following output:
+
+```
+service/provider-chaos-service created
+```
+
+Run the following command to get information about all the running Kubernetes services:
+```
+kubectl get service
+```
+
+You should see a similar output to that shown below:
+
+```
+NAME                TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)          AGE
+kubernetes          ClusterIP      10.96.0.1       <none>          443/TCP          130m
+provider-chaos-service   LoadBalancer   10.105.156.41   10.105.156.41   3001:30057/TCP   104s
+```
+
+Now the “EXTERNAL-IP” for “provider-chaos-service” is available at the address is “10.105.156.41”. You can try to make an API request to the API to get the current timestamp by running the following command. Remember to replace “139.180.223.84” with your actual EXTERNAL_IP value.
+
+```
+curl --location 'http://10.105.156.41:3001/'
+```
+
+You should see a similar output to that shown below:
+
+```
+Current time is: 1679546283
+```
+
+You have now successfully deployed the get time API to the Kubernetes cluster and are able to access the API from your local machine. Let’s move on to deploying the consuming API service.
+
+### (2.2) Deploy consumer API service :rocket:
 
 #### (2.2.1) Going through the files inside the service directory
 
-#### (2.2.2) Building the service image and push it to Docker Hub
+The current structure of the directory looks like the following:
+
+```
+.
+├── deployment.yml
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── consumer.go
+└── service.yml
+```
+1. The **go.mod** and **go.sum** files are for defining the dependencies that the service needs to use.
+
+2. The **consumer.go** defines all the logic of this service. This service implements an API with the path as “/consuming”, which makes an API request to the get current timestamp API, then responds with the appropriate message depending on the status code of the get current timestamp API.
+
+```
+package main
+
+import (
+  "fmt"
+  "net/HTTP"
+  "os"
+
+  "github.com/gin-gonic/gin"
+)
+
+func main() {
+  r := gin.New()
+
+  r.GET("/consuming", func(ctx *gin.Context) {
+
+    response, err := http.Get(fmt.Sprintf("http://%s:%s/", os.Getenv("PROVIDER_URL"), os.Getenv("PROVIDER_PORT")))
+    if err != nil {
+      fmt.Printf("error making http request: %s\n", err)
+      os.Exit(1)
+    }
+
+    if response.StatusCode == 200 {
+      ctx.String(200, "Successfully consuming message")
+    } else {
+      ctx.String(500, "Internal server error")
+    }
+
+  })
+
+  r.Run(":3000")
+}
+```
+This consuming API will return “200” status code with the message “Successfully consuming message” if the get current timestamp API responds with a 200 status code. If the get current timestamp API returns another status code other than “200”, the consuming API will return a “500” status code with the message “Internal server error”.
+
+The consuming API will get the domain and port of the get current timestamp API from environment variables with the keys PROVIDER_URL and PROVDER_PORT. You will provide these environment variables to the Kubernetes pod using the Kubernetes config map.
+
+3. The **Dockerfile** defines all the steps to build the Docker image for the consuming API service. It looks the same as the Dockerfile for the get current timestamp API service.
+
+
+```
+# syntax=docker/dockerfile:1
+
+FROM golang:1.19-alpine
+
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY *.go ./
+
+RUN go build -o /main
+
+CMD [ "/main" ]
+```
+
+The **deployment.yml** file tells Kubernetes to create the pods and the config map for the consuming API service.
+
+
+```
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-consumer-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      name: my-consumer-app
+  template:
+    metadata:
+      labels:
+        name: my-consumer-app
+    spec:
+      containers:
+      - name: application
+        image: your_docker_hub_account/my-consumer-app:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: dockerhub-secret
+        ports:
+          - containerPort: 3000
+        env:
+        # Define the environment variable
+        - name: PROVIDER_URL 
+          value: my-go-app-service
+        - name: PROVIDER_PORT
+          value: "3001"
+```
+
+You need to make some modifications to the file to match your actual values:
+
+* Replace the “your_docker_hub_account” in the line “image: your_docker_hub_account/my-consumer-app:latest” with your actual Docker Hub account
+The Kubernetes pod for the consuming API service will access the Kubernetes config map values using the environment variables from config map.
+
+5. The **service.yml** file defines the Kubernetes service that will serve as a load balancer so that you can access the consuming API service from outside the Kubernetes cluster.
+
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-consumer-app-service
+spec:
+  type: LoadBalancer
+  ports:
+  - name: HTTP
+    port: 3001
+    targetPort: 3000
+  selector:
+    name: my-consumer-app
+```
+Kubernetes will look for the pod which has a name with the prefix “my-consumer-app” then forward container port “3000” to port “3001” of the Kubernetes service named “my-consumer-app-service”.
+
+#### (2.2.2) Building the service image and push it to Docker Hub 
+
+Run the following commands to build the new image for the consumer app and push it to Docker Hub.
+
+```
+docker build -t your_docker_hub_account/my-consumer-app .
+docker push your_docker_hub_account/my-consumer-app
+```
+
+Now that you have successfully pushed the Docker image to your Docker Hub page. Let’s move on to deploy the consuming API service to Kubernetes cluster.
 
 #### (2.2.3) Deploying the service to the Kubernetes cluster
+
+First, run the following command to deploy the Kubernetes pods and config map for the consuming API service.
+
+```
+kubectl apply -f deployment.yml
+```
+
+Then, run the following command to deploy the Kubernetes service:
+
+```
+kubectl apply -f service.yml
+```
+Run the following command to check whether the services are up and running.
+
+```
+kubectl get service
+```
+You should be able to see the similar output to that shown below:
+
+
+```
+NAME                      TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)          AGE
+kubernetes                ClusterIP      10.96.0.1       <none>          443/TCP          155m
+my-consumer-app-service   LoadBalancer   10.110.54.31    10.110.54.31    3001:31258/TCP   23m
+my-go-app-service         LoadBalancer   10.105.156.41   10.105.156.41   3001:30057/TCP   26m
+```
+
+You can make an API request to the API “/consuming” using the command shown below (You need to replace the “your_external_ip” with your actual value for the “EXTERNAL-IP” of your “my-consumer-app-service”):
+
+```
+curl --location 'http://your_external_ip:3001/consuming'
+```
+You should see a similar output to that shown below:
+
+```
+Successfully consuming message
+```
+Now you have successfully deployed the consuming API service to the Kubernetes cluster and are able to access the API from outside the cluster. Let’s continue to the next section to apply chaos testing for the two services.
 
 ## (3) Chaos Testing
 
