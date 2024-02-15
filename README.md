@@ -614,7 +614,7 @@ To run chaos testing for the two services using k6, you need to install k6 and t
 
 ### (3.1) Installing k6 and xk6-disruptor
 
-From the current terminal at “go-consumer-semaphore-chaos” directory, run the following command to install k6. The commands below work for an Ubuntu machine, if you’re using a different operating system, check out the [k6](https://k6.io/docs/get-started/installation/) installation page for guidelines.
+From the current terminal at current directory, run the following command to install k6. The commands below work for an Ubuntu machine, if you’re using a different operating system, check out the [k6](https://k6.io/docs/get-started/installation/) installation page for guidelines.
 
 ```
 sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
@@ -748,7 +748,7 @@ export const options = {
       errorBody: errorBody,
       exclude: '/health',
     };
-    const svcDisruptor = new ServiceDisruptor('my-go-app-service', 'default');
+    const svcDisruptor = new ServiceDisruptor('provider-chaos-service', 'default');
     svcDisruptor.injectHTTPFaults(fault, 30);
   }
 ```
@@ -900,7 +900,7 @@ export function injectFaults(data) {
       errorCode: 500,
       errorBody: errorBody,
     };
-    const svcDisruptor = new ServiceDisruptor('my-go-app-service', 'default');
+    const svcDisruptor = new ServiceDisruptor('provider-chaos-service', 'default');
     svcDisruptor.injectHTTPFaults(fault, 30);
   }
 ```
@@ -963,7 +963,7 @@ Notice the http_req_failed metric, you see there are 3.86% requests to the consu
 
 ### (3.4) Solution
 
-To make the consuming API more stable and fault-tolerant, you need to apply a retry mechanism for the consuming API so that when it receives the 500 status code from the get current timestamp API, it will try to make another request. To do this, replace the current main.go file inside the directory go-consumer-semaphore-chaos with the following code:
+To make the consuming API more stable and fault-tolerant, you need to apply a retry mechanism for the consuming API so that when it receives the 500 status code from the get current timestamp API, it will try to make another request. To do this, replace the current main.go file inside the directory with the following code:
 
 ```
 //main.go
