@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-chaos
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      name: consumer-chaos
+  template:
+    metadata:
+      labels:
+        name: consumer-chaos
+    spec:
+      containers:
+      - name: application
+        image: gpap84/consumer-chaos:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: dockerhub-secret
+        ports:
+          - containerPort: 3000
+        env:
+        # Define the environment variable
+        - name: PROVIDER_URL 
+          value: consumer-chaos-service
+        - name: PROVIDER_PORT
+          value: "3001"

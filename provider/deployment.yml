@@ -1,0 +1,24 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provider-chaos
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      name: provider-chaos
+  template:
+    metadata:
+      labels:
+        name: provider-chaos
+    spec:
+      containers:
+      - name: application
+        image: gpap84/provider-chaos:latest
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: dockerhub-secret
+        ports:
+          - containerPort: 3000
