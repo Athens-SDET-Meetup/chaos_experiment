@@ -742,14 +742,14 @@ export const options = {
     const errorBody = '{"error":"Unexpected error","status_code":500,"status_text":"Internal Server Error"}';
   
     const fault = {
-      averageDelay: 100,
+      averageDelay: "100s",
       errorRate: 0.1,
       errorCode: 500,
       errorBody: errorBody,
       exclude: '/health',
     };
     const svcDisruptor = new ServiceDisruptor('provider-chaos-service', 'default');
-    svcDisruptor.injectHTTPFaults(fault, 30);
+    svcDisruptor.injectHTTPFaults(fault, "30s");
   }
 ```
 In the first 3 lines, you import built-in modules from k6 and the xk6-disruptor extension.
@@ -1068,7 +1068,7 @@ You should see simlar output as:
 NAME                      TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)          AGE
 kubernetes                ClusterIP      10.96.0.1       <none>          443/TCP          155m
 consumer-chaos-service   LoadBalancer   10.115.54.31    10.115.54.31    3001:31258/TCP   23m
-provider-chaos-service         LoadBalancer   10.108.156.41   10.108.156.41   3001:30057/TCP   26m
+provider-chaos-service         LoadBalancer   10.108.156.41   10.108.156.41   3002:30057/TCP   26m
 ```
 
 Then run the chaos test again from the terminal. Replace “your_consumer_service_external_ip” with your actual value.
