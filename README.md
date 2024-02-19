@@ -742,7 +742,7 @@ export const options = {
     const errorBody = '{"error":"Unexpected error","status_code":500,"status_text":"Internal Server Error"}';
   
     const fault = {
-      averageDelay: "100s",
+      averageDelay: "100ms",
       errorRate: 0.1,
       errorCode: 500,
       errorBody: errorBody,
