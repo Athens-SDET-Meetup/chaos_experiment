@@ -909,7 +909,7 @@ From the current terminal, run the following command to execute chaos testing. R
 
 
 ```
-xk6-disruptor run --env SVC_IP=your_consumer_service_external_ip:3001 chaos-test.js
+xk6-disruptor run --env SVC_IP=your_consumer_service_external_ip:3002 chaos-test.js
 ```
 
 ### (3.3) Root cause analysis
@@ -1074,7 +1074,7 @@ provider-chaos-service         LoadBalancer   10.108.156.41   10.108.156.41   30
 Then run the chaos test again from the terminal. Replace “your_consumer_service_external_ip” with your actual value.
 
 ```
-xk6-disruptor run --env SVC_IP=your_consumer_service_external_ip:3001 chaos-test.js
+xk6-disruptor run --env SVC_IP=your_consumer_service_external_ip:3002 chaos-test.js
 ```
 
 Wait for the test to finish, and see the test result. Your test result should look similar as the one below:
