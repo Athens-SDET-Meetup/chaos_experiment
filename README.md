@@ -599,7 +599,7 @@ consumer-chaos-service         LoadBalancer   10.105.156.41   10.105.156.41   30
 You can make an API request to the API “/consuming” using the command shown below (You need to replace the “your_external_ip” with your actual value for the “EXTERNAL-IP” of your “consumer-chaos-service”):
 
 ```
-curl --location 'http://your_external_ip:3001/consuming'
+curl --location 'http://your_external_ip:3002/consuming'
 ```
 You should see a similar output to that shown below:
 
