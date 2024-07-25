@@ -247,7 +247,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - name: HTTP
+  - name: http
     port: 3001
     targetPort: 3000
   selector:
@@ -549,13 +549,13 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - name: HTTP
-    port: 3001
+  - name: http
+    port: 3002
     targetPort: 3000
   selector:
     name: consumer-chaos
 ```
-Kubernetes will look for the pod which has a name with the prefix “consumer-chaos” then forward container port “3000” to port “3001” of the Kubernetes service named “consumer-chaos-service”.
+Kubernetes will look for the pod which has a name with the prefix “consumer-chaos” then forward container port “3000” to port “3002” of the Kubernetes service named “consumer-chaos-service”.
 
 #### (2.2.2) Building the service image and push it to Docker Hub 
 
@@ -593,7 +593,7 @@ You should be able to see the similar output to that shown below:
 NAME                      TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)          AGE
 kubernetes                ClusterIP      10.96.0.1       <none>          443/TCP          155m
 provider-chaos-service   LoadBalancer   10.110.54.31    10.110.54.31    3001:31258/TCP   23m
-consumer-chaos-service         LoadBalancer   10.105.156.41   10.105.156.41   3001:30057/TCP   26m
+consumer-chaos-service         LoadBalancer   10.105.156.41   10.105.156.41   3002:30057/TCP   26m
 ```
 
 You can make an API request to the API “/consuming” using the command shown below (You need to replace the “your_external_ip” with your actual value for the “EXTERNAL-IP” of your “consumer-chaos-service”):
