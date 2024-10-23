@@ -895,13 +895,13 @@ export function injectFaults(data) {
     const errorBody = '{"error":"Unexpected error","status_code":500,"status_text":"Internal Server Error"}';
   
     const fault = {
-      averageDelay: 100,
+      averageDelay: "100ms",
       errorRate: 0.1,
       errorCode: 500,
       errorBody: errorBody,
     };
     const svcDisruptor = new ServiceDisruptor('provider-chaos-service', 'default');
-    svcDisruptor.injectHTTPFaults(fault, 30);
+    svcDisruptor.injectHTTPFaults(fault, "30s");
   }
 ```
 
