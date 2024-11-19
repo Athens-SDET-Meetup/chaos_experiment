@@ -96,7 +96,7 @@ Open a new terminal in your local machine and run the following commands to inst
 
 ```
 // First, download the minikube client tool to the current directory
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/v1.33.1/minikube-linux-amd64
 
 // Make the minikube client to be executable
 chmod +x minikube
