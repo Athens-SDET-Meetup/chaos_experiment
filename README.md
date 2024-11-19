@@ -95,7 +95,7 @@ You can set up a Kubernetes cluster by using cloud provider-supported tools like
 Open a new terminal in your local machine and run the following commands to install Minikube:
 
 ```
-// First, download the minikube client tool to the current directory
+// First, download the minikube client tool to the current directory (v1.33.1)
 curl -Lo minikube https://storage.googleapis.com/minikube/releases/v1.33.1/minikube-linux-amd64
 
 // Make the minikube client to be executable
